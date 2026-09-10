@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -127,7 +129,7 @@ class StockMovement(models.Model):
     )
     quantity = models.DecimalField(
         'Cantidad', max_digits=10, decimal_places=3,
-        validators=[MinValueValidator(float(0))],
+        validators=[MinValueValidator(Decimal('0'))],
     )
     reference = models.CharField(
         'Referencia', max_length=100, blank=True,

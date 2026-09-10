@@ -2,6 +2,8 @@
 Django settings for krea_lab project.
 """
 
+import sys
+
 from datetime import timedelta
 from pathlib import Path
 
@@ -62,12 +64,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'krea_lab.wsgi.application'
 
 
-DATABASES = {
-    'default': dj_database_url.parse(config('DATABASE_URL', default=''))
-}
-if DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql':
-    DATABASES['default']['CONN_MAX_AGE'] = 300
-    DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'test_db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.parse(config('DATABASE_URL', default=''))
+    }
+    if DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql':
+        DATABASES['default']['CONN_MAX_AGE'] = 300
+        DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
 
 
 AUTH_PASSWORD_VALIDATORS = [
