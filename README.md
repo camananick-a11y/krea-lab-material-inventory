@@ -54,6 +54,12 @@ Base URL: `http://127.0.0.1:8000/api`
 
 Usa el token como header: `Authorization: Bearer <access_token>`
 
+### Documentación interactiva
+| Método | Endpoint | Descripción |
+|---|---|---|
+| GET | `/api/docs/` | UI Swagger para probar la API desde el navegador |
+| GET | `/api/schema/` | Esquema OpenAPI (YAML) |
+
 ### Inventario
 | Método | Endpoint | Descripción |
 |---|---|---|

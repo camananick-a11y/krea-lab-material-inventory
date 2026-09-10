@@ -1,11 +1,26 @@
 from django.db.models import F, Sum
+from drf_spectacular.openapi import OpenApiParameter
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.response import Response
 
 from inventory.models import AlertThreshold, Material, StockMovement
 
+from .serializers import (
+    ConsumptionResponseSerializer,
+    SummaryResponseSerializer,
+)
+
 
 class ConsumptionReportViewSet(viewsets.ViewSet):
+    @extend_schema(
+        parameters=[
+            OpenApiParameter('material', int, required=False),
+            OpenApiParameter('from', str, required=False),
+            OpenApiParameter('to', str, required=False),
+        ],
+        responses=ConsumptionResponseSerializer,
+    )
     def list(self, request):
         material_id = request.query_params.get('material')
         from_date = request.query_params.get('from')
@@ -21,14 +36,17 @@ class ConsumptionReportViewSet(viewsets.ViewSet):
         if to_date:
             movements = movements.filter(created_at__date__lte=to_date)
 
-        if material_id:
-            rows = movements.values('material_id', 'material__name', 'material__brand', 'material__material_type__unit', 'adjustment_type') \
-                .annotate(quantity=Sum('quantity')) \
-                .order_by('-quantity')
-        else:
-            rows = movements.values('material_id', 'material__name', 'material__brand') \
-                .annotate(quantity=Sum('quantity'), unit=F('material__material_type__unit')) \
-                .order_by('-quantity')
+        rows = (
+            movements
+            .values('material_id')
+            .annotate(
+                name=F('material__name'),
+                brand=F('material__brand'),
+                unit=F('material__material_type__unit'),
+                quantity=Sum('quantity'),
+            )
+            .order_by('-quantity')
+        )
 
         total_quantity = movements.aggregate(total=Sum('quantity'))['total'] or 0
         movements_count = movements.count()
@@ -46,6 +64,7 @@ class ConsumptionReportViewSet(viewsets.ViewSet):
 
 
 class SummaryViewSet(viewsets.ViewSet):
+    @extend_schema(responses=SummaryResponseSerializer)
     def list(self, request):
         total_materials = Material.objects.count()
         low_stock = []

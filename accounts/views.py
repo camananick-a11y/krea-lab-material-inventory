@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,10 +17,18 @@ class LoginView(TokenObtainPairView):
 
 
 class ProfileView(APIView):
+    @extend_schema(
+        request=None,
+        responses=UserProfileSerializer,
+    )
     def get(self, request):
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data)
 
+    @extend_schema(
+        request=UserProfileSerializer,
+        responses=UserProfileSerializer,
+    )
     def patch(self, request):
         serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)

@@ -39,7 +39,7 @@ class MaterialSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('created_at', 'updated_at')
 
-    def get_is_below_threshold(self, obj):
+    def get_is_below_threshold(self, obj) -> bool:
         return obj.is_below_threshold
 
 
