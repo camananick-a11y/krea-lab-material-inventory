@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Etiquetas QR — Krea Lab</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --orange: #e8590c;
+      --ink: #1a1a1a;
+      --muted: #555;
+      --line: #c8c8c8;
+    }
+    body {
+      font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: #fff;
+    }
+    @page { size: A4; margin: 5mm; }
+    .sheet { display: flex; flex-wrap: wrap; gap: 2mm; align-content: flex-start; }
+    .label {
+      width: 92mm; height: 35mm;
+      border: 0.5mm solid var(--line);
+      border-radius: 1.5mm;
+      padding: 2mm 2.5mm;
+      display: flex;
+      gap: 2.5mm;
+      page-break-inside: avoid;
+      background: #fff;
+    }
+    .label .qr { width: 26mm; height: 26mm; flex: 0 0 auto; }
+    .label .qr img { width: 26mm; height: 26mm; display: block; }
+    .label .info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; }
+    .brand-logo { font-weight: 700; font-size: 8pt; color: var(--orange); letter-spacing: .5px; }
+    .code { font-family: Consolas, monospace; font-size: 15pt; font-weight: 800; letter-spacing: 1px; }
+    .material { font-size: 8pt; line-height: 1.25; font-weight: 600; }
+    .meta { font-size: 7pt; color: var(--muted); line-height: 1.35; }
+    .bar {
+      height: 2.2mm; background: #eee; border-radius: 1mm; overflow: hidden; border: 0.2mm solid #ddd;
+    }
+    .bar > span { display: block; height: 100%; background: linear-gradient(90deg, #e8590c, #f08c00); }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 2mm; }
+    .fill { font-size: 7pt; font-weight: 700; }
+    .sede { font-size: 7pt; color: var(--muted); }
+    .footer { font-size: 6pt; color: #999; text-align: right; margin-top: 4mm; }
+    @media print { .noprint { display: none; } }
+    .noprint { margin-bottom: 4mm; font-size: 10pt; }
+  </style>
+</head>
+<body>
+  <div class="noprint">
+    Etiqueta de impresión — Krea Lab Inventario ·
+    Base URL: <code>{{ base_url }}</code> · Generado el {{ generated_at }}
+  </div>
+  <div class="sheet">
+    {% for label in labels %}
+    <div class="label">
+      <div class="qr"><img src="data:image/png;base64,{{ label.qr_b64 }}" alt="QR {{ label.code }}"></div>
+      <div class="info">
+        <div class="brand-logo">KREA LAB · INVENTARIO</div>
+        <div class="code">{{ label.code }}</div>
+        <div class="material">{{ label.material }}</div>
+        <div class="meta">{{ label.type_name }} ({{ label.unit }}) · {{ label.finish }}{% if label.color %} · {{ label.color }}{% endif %}</div>
+        <div class="bar"><span style="width: {{ label.percent }}%"></span></div>
+        <div class="row">
+          <span class="fill">{{ label.fill_level }}</span>
+          <span class="sede"><strong>{{ label.sede }}</strong> · {{ label.status }}</span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="footer">{{ base_url }}/api/inventory/u/&lt;code&gt; — datos actualizados al momento del escaneo</div>
+</body>
+</html>
