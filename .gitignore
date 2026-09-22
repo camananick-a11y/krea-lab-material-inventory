@@ -16,3 +16,11 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+
+# Documentos de cierre e informes locales (no se publican)
+README-SEMANA-2.md
+INFORME-DE-AVANCE.md
+
+# Hoja de etiquetas QR generada (se regenera con generate_qr_labels)
+# Solo la que Genera el comando en la raiz; la plantilla en inventory/templates/ NO se ignora
+/qr_labels.html
